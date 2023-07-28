@@ -2,7 +2,7 @@
 FROM alpine:3.13
 
 # Getting nginx end Tsl (openssl for it)
-RUN apk update; apk add nginx; apk add openssl
+RUN apk update; apk add --no-cache nginx; apk add --no-cache openssl
 
 # We need SSL key generation
 RUN mkdir /etc/nginx/ssl;
@@ -13,10 +13,16 @@ RUN openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
 
 # Creating runfolder for nginx
 RUN mkdir /run/nginx
+RUN mkdir -p /var/www/html
 
 # Copy the app package and package-lock.json file
 COPY conf/nginx.conf /etc/nginx/conf.d/default.conf
+COPY tools/www/index.html /var/www/html/
 
+# 
+ENTRYPOINT ["var/www/nginx_start.sh"]
+
+EXPOSE 443
 
 ## Start the nginx when the app is started
-ENTRYPOINT [ "nginx" ]
+CMD ["nginx", "-g", "daemon off;"]
