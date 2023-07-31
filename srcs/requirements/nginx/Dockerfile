@@ -9,20 +9,19 @@ RUN mkdir /etc/nginx/ssl;
 RUN openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
         -keyout /etc/nginx/ssl/nginx.key \
         -out /etc/nginx/ssl/nginx.crt \
-        -subj "/C=TR/ST=Istanbul/L=Istanbul/O=42_Kocaeli/OU=mkardes/CN=mkardes/"
+        -subj "/C=TR/ST=Istanbul/L=Istanbul/O=42_Kocaeli/OU=mkardes/CN=mkardes.42.fr/"
 
 # Creating runfolder for nginx
 RUN mkdir /run/nginx
 RUN mkdir -p /var/www/html
 
+WORKDIR /var/www/html
+
 # Copy the app package and package-lock.json file
 COPY conf/nginx.conf /etc/nginx/conf.d/default.conf
 COPY tools/www/index.html /var/www/html/
 
+EXPOSE	443
+
 # 
-ENTRYPOINT ["var/www/nginx_start.sh"]
-
-EXPOSE 443
-
-## Start the nginx when the app is started
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
